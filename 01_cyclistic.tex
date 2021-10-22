@@ -636,22 +636,6 @@ was dropped beginning in
 \end{Highlighting}
 \end{Shaded}
 
-a\# Remove ``bad'' data
-
-a\# The dataframe includes a few hundred entries when bikes were taken
-out of docks and checked for quality by Divvy or ride\_length was
-negative
-
-a\# We will create a new version of the dataframe (v2) since data is
-being removed
-
-a\#
-\url{https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/}
-all\_trips\_v2 \textless-
-all\_trips{[}!(all\_trips\(start_station_name == "HQ QR" | all_trips\)ride\_length\textless0),{]}
-
-www END wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-
 \hypertarget{step-3-clean-up-and-add-data-to-prepare-for-analysis}{%
 \subsubsection{STEP 3: CLEAN UP AND ADD DATA TO PREPARE FOR
 ANALYSIS}\label{step-3-clean-up-and-add-data-to-prepare-for-analysis}}
@@ -789,23 +773,24 @@ created}\label{inspect-the-new-table-that-has-been-created}}
 fix:}\label{there-are-a-few-problems-we-will-need-to-fix}}
 
 \hypertarget{in-the-member_casual-column-there-are-two-names-for-members-member-and-subscriber-and-two-names-for-casual-riders-customer-and-casual.-we-will-need-to-consolidate-that-from-four-to-two-labels.}{%
-\subparagraph{(1) In the ``member\_casual'' column, there are two names
-for members (``member'' and ``Subscriber'') and two names for casual
-riders (``Customer'' and ``casual''). We will need to consolidate that
-from four to two
+\paragraph{(1) In the ``member\_casual'' column, there are two names for
+members (``member'' and ``Subscriber'') and two names for casual riders
+(``Customer'' and ``casual''). We will need to consolidate that from
+four to two
 labels.}\label{in-the-member_casual-column-there-are-two-names-for-members-member-and-subscriber-and-two-names-for-casual-riders-customer-and-casual.-we-will-need-to-consolidate-that-from-four-to-two-labels.}}
 
 In the ``member\_casual'' column, replace ``Subscriber'' with ``member''
 and ``Customer'' with ``casual''
 
-Before 2020, Divvy used different labels for these two types of riders
-\ldots{} we will want to make our dataframe consistent with their
-current nomenclature
+Before 2020, Divvy used different labels for these two types of riders.
+We will make our dataframe consistent with their current nomenclature
 
 N.B.: ``Level'' is a special property of a column that is retained even
 if a subset does not contain any values from a specific level
 
-Begin by seeing how many observations fall under each usertype
+\hypertarget{begin-by-seeing-how-many-observations-fall-under-each-usertype}{%
+\subparagraph{Begin by seeing how many observations fall under each
+usertype}\label{begin-by-seeing-how-many-observations-fall-under-each-usertype}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -819,7 +804,10 @@ Begin by seeing how many observations fall under each usertype
 ##      48480     833822     378407    2559525
 \end{verbatim}
 
-Reassign to the desired values (we will go with the current 2020 labels)
+\hypertarget{reassign-to-the-desired-values-we-will-go-with-the-current-2020-labels}{%
+\subparagraph{Reassign to the desired values (we will go with the
+current 2020
+labels)}\label{reassign-to-the-desired-values-we-will-go-with-the-current-2020-labels}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -830,9 +818,9 @@ Reassign to the desired values (we will go with the current 2020 labels)
 \end{Highlighting}
 \end{Shaded}
 
-Check to make sure the proper number of observations were reassigned
-
-table(all\_trips\$member\_casual)
+\hypertarget{check-to-make-sure-the-proper-number-of-observations-were-reassigned}{%
+\subparagraph{Check to make sure the proper number of observations were
+reassigned}\label{check-to-make-sure-the-proper-number-of-observations-were-reassigned}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -847,21 +835,20 @@ table(all\_trips\$member\_casual)
 \end{verbatim}
 
 \hypertarget{the-data-can-only-be-aggregated-at-the-ride-level-which-is-too-granular.-we-will-want-to-add-some-additional-columns-of-data-such-as-day-month-year-that-provide-additional-opportunities-to-aggregate-the-data.}{%
-\subparagraph{(2) The data can only be aggregated at the ride-level,
-which is too granular. We will want to add some additional columns of
-data -- such as day, month, year -- that provide additional
-opportunities to aggregate the
+\paragraph{(2) The data can only be aggregated at the ride-level, which
+is too granular. We will want to add some additional columns of data --
+such as day, month, year -- that provide additional opportunities to
+aggregate the
 data.}\label{the-data-can-only-be-aggregated-at-the-ride-level-which-is-too-granular.-we-will-want-to-add-some-additional-columns-of-data-such-as-day-month-year-that-provide-additional-opportunities-to-aggregate-the-data.}}
 
-Add columns that list the date, year, month, day and day\_of\_week of
-each ride
+\hypertarget{add-columns-that-list-the-date-year-month-day-and-day_of_week-of-each-ride}{%
+\subparagraph{Add columns that list the date, year, month, day and
+day\_of\_week of each
+ride}\label{add-columns-that-list-the-date-year-month-day-and-day_of_week-of-each-ride}}
 
 This will allow us to aggregate ride data for each month, day, or year
 \ldots{} before completing these operations we could only aggregate at
 the ride level
-
-\url{https://www.statmethods.net/input/dates.html} more on date formats
-in R found at that link
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -873,15 +860,15 @@ in R found at that link
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{we-will-want-to-add-a-calculated-field-for-length-of-ride-since-the-2020q1-data-did-not-have-the-tripduration-column.-we-will-add-ride_length-to-the-entire-dataframe-for-consistency.}{%
-\subparagraph{(3) We will want to add a calculated field for length of
-ride since the 2020Q1 data did not have the ``tripduration'' column. We
-will add ``ride\_length'' to the entire dataframe for
-consistency.}\label{we-will-want-to-add-a-calculated-field-for-length-of-ride-since-the-2020q1-data-did-not-have-the-tripduration-column.-we-will-add-ride_length-to-the-entire-dataframe-for-consistency.}}
+\hypertarget{we-will-add-a-calculated-field-for-length-of-ride-since-the-2020-q1-data-did-not-have-the-tripduration-column.-we-will-add-ride_length-to-the-entire-dataframe-for-consistency.}{%
+\paragraph{(3) We will add a calculated field for length of ride since
+the 2020 Q1 data did not have the ``tripduration'' column. We will add
+``ride\_length'' to the entire dataframe for
+consistency.}\label{we-will-add-a-calculated-field-for-length-of-ride-since-the-2020-q1-data-did-not-have-the-tripduration-column.-we-will-add-ride_length-to-the-entire-dataframe-for-consistency.}}
 
-Add a ``ride\_length'' calculation to all\_trips (in seconds)
-
-\url{https://stat.ethz.ch/R-manual/R-devel/library/base/html/difftime.html}
+\hypertarget{add-a-ride_length-calculation-to-all_trips-in-seconds}{%
+\subparagraph{Add a ``ride\_length'' calculation to all\_trips (in
+seconds)}\label{add-a-ride_length-calculation-to-all_trips-in-seconds}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -889,7 +876,9 @@ Add a ``ride\_length'' calculation to all\_trips (in seconds)
 \end{Highlighting}
 \end{Shaded}
 
-Inspect the structure of the columns
+\hypertarget{inspect-the-structure-of-the-columns}{%
+\subparagraph{Inspect the structure of the
+columns}\label{inspect-the-structure-of-the-columns}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -917,8 +906,10 @@ Inspect the structure of the columns
 ##   ..- attr(*, "units")= chr "secs"
 \end{verbatim}
 
-Convert ``ride\_length'' from Factor to numeric so we can run
-calculations on the data
+\hypertarget{convert-ride_length-from-factor-to-numeric-so-we-can-run-calculations-on-the-data}{%
+\subparagraph{Convert ``ride\_length'' from Factor to numeric so we can
+run calculations on the
+data}\label{convert-ride_length-from-factor-to-numeric-so-we-can-run-calculations-on-the-data}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -942,20 +933,21 @@ calculations on the data
 \end{verbatim}
 
 \hypertarget{there-are-some-rides-where-tripduration-shows-up-as-negative-including-several-hundred-rides-where-divvy-took-bikes-out-of-circulation-for-quality-control-reasons.-we-will-want-to-delete-these-rides.}{%
-\subparagraph{(4) There are some rides where tripduration shows up as
+\paragraph{(4) There are some rides where tripduration shows up as
 negative, including several hundred rides where Divvy took bikes out of
 circulation for Quality Control reasons. We will want to delete these
 rides.}\label{there-are-some-rides-where-tripduration-shows-up-as-negative-including-several-hundred-rides-where-divvy-took-bikes-out-of-circulation-for-quality-control-reasons.-we-will-want-to-delete-these-rides.}}
 
-Remove ``bad'' data
+\hypertarget{remove-bad-data}{%
+\subparagraph{Remove ``bad'' data}\label{remove-bad-data}}
 
 The dataframe includes a few hundred entries when bikes were taken out
 of docks and checked for quality by Divvy or ride\_length was negative
 
-\url{https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/}
-
-We will create a new version of the dataframe (v2) since data is being
-removed
+\hypertarget{we-will-create-a-new-version-of-the-dataframe-v2-since-data-is-being-removed}{%
+\subparagraph{We will create a new version of the dataframe (v2) since
+data is being
+removed}\label{we-will-create-a-new-version-of-the-dataframe-v2-since-data-is-being-removed}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1012,10 +1004,10 @@ seconds)}\label{descriptive-analysis-on-ride_length-all-figures-in-seconds}}
 ## [1] 1
 \end{verbatim}
 
-\hypertarget{you-can-condense-the-four-lines-above-to-one-line-using-summary-on-the-specific-attribute}{%
-\paragraph{You can condense the four lines above to one line using
-summary() on the specific
-attribute}\label{you-can-condense-the-four-lines-above-to-one-line-using-summary-on-the-specific-attribute}}
+\hypertarget{condense-the-four-lines-above-to-one-line-using-summary-on-the-specific-attribute}{%
+\paragraph{Condense the four lines above to one line using summary() on
+the specific
+attribute}\label{condense-the-four-lines-above-to-one-line-using-summary-on-the-specific-attribute}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1162,7 +1154,7 @@ weekday}\label{analyze-ridership-data-by-type-and-weekday}}
 \NormalTok{all\_trips\_v2 }\SpecialCharTok{\%\textgreater{}\%} 
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{weekday =} \FunctionTok{wday}\NormalTok{(started\_at, }\AttributeTok{label =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}  \CommentTok{\#creates weekday field using wday()}
   \FunctionTok{group\_by}\NormalTok{(member\_casual, weekday) }\SpecialCharTok{\%\textgreater{}\%}  \CommentTok{\#groups by usertype and weekday}
-  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{number\_of\_rides =} \FunctionTok{n}\NormalTok{(),                          }\CommentTok{\#calculates the number of rides and average duration }
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{number\_of\_rides =} \FunctionTok{n}\NormalTok{(),          }\CommentTok{\#calculates the number of rides and average duration }
   \AttributeTok{average\_duration =} \FunctionTok{mean}\NormalTok{(ride\_length)) }\SpecialCharTok{\%\textgreater{}\%}         \CommentTok{\# calculates the average duration}
   \FunctionTok{arrange}\NormalTok{(member\_casual, weekday)                               }\CommentTok{\# sorts}
 \end{Highlighting}
@@ -1250,23 +1242,13 @@ ANALYSIS}\label{step-5-export-summary-file-for-further-analysis}}
 or my presentation
 software}\label{create-a-csv-file-that-we-will-visualize-in-excel-tableau-or-my-presentation-software}}
 
-N.B.: This file location is for a Mac. If you are working on a PC,
-change the file location accordingly (most likely
-``C:\Users\YOUR\_USERNAME\Desktop...'') to export the data. You can read
-more here:
-
-\url{https://datatofish.com/export-dataframe-to-csv-in-r/}
-
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{counts }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(all\_trips\_v2}\SpecialCharTok{$}\NormalTok{ride\_length }\SpecialCharTok{\textasciitilde{}}\NormalTok{ all\_trips\_v2}\SpecialCharTok{$}\NormalTok{member\_casual }\SpecialCharTok{+} 
 \NormalTok{                      all\_trips\_v2}\SpecialCharTok{$}\NormalTok{day\_of\_week, }\AttributeTok{FUN =}\NormalTok{ mean)}
-\FunctionTok{write.csv}\NormalTok{(counts, }\AttributeTok{file =} \StringTok{\textquotesingle{}C:/Users/Action/Documents/RStudio/GGDA/Project/Cyclistic/avg\_ride\_length.csv\textquotesingle{}}\NormalTok{)    }
+\FunctionTok{write.csv}\NormalTok{(counts, }\AttributeTok{file =}  \StringTok{\textquotesingle{}C:/Users/Action/Documents/RStudio/repos/01\_\_cyclistic/avg\_ride\_length.csv\textquotesingle{}}\NormalTok{)    }
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{youre-done-congratulations}{%
-\subsubsection{You're done!
-Congratulations!}\label{youre-done-congratulations}}
 
 \end{document}

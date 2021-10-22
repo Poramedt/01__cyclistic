@@ -3,8 +3,8 @@ title: "01__cyclistic"
 author: "Poramed Tripop"
 date: "9/30/2021"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup}
@@ -169,8 +169,6 @@ In the "member_casual" column, replace "Subscriber" with "member" and "Customer"
 
 Before 2020, Divvy used different labels for these two types of riders. We will make our dataframe consistent with their current nomenclature
 
-N.B.: "Level" is a special property of a column that is retained even if a subset does not contain any values from a specific level
-
 ##### Begin by seeing how many observations fall under each usertype
 
 ```{r seeing how many observations fall under each usertype}
@@ -196,7 +194,7 @@ table(all_trips$member_casual)
 
 ##### Add columns that list the date, year, month, day and day_of_week of each ride
 
-This will allow us to aggregate ride data for each month, day, or year ... before completing these operations we could only aggregate at the ride level
+This will allow us to aggregate ride data for each month, day, or year. Before completing these operations, we could only aggregate at the ride level
 
 ```{r add columns that list the date, year, month, day and day_of_week of each ride}
 all_trips$date <- as.Date(all_trips$started_at)
@@ -252,7 +250,7 @@ median(all_trips_v2$ride_length) #midpoint number in the ascending array of ride
 max(all_trips_v2$ride_length) #longest ride
 min(all_trips_v2$ride_length) #shortest ride
 ```
-#### You can condense the four lines above to one line using summary() on the specific attribute
+#### Condense the four lines above to one line using summary() on the specific attribute
 
 ```{r condense the four lines above to one line using summary()}
 summary(all_trips_v2$ride_length)
@@ -297,7 +295,7 @@ aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual +
 all_trips_v2 %>% 
   mutate(weekday = wday(started_at, label = TRUE)) %>%  #creates weekday field using wday()
   group_by(member_casual, weekday) %>%  #groups by usertype and weekday
-  summarise(number_of_rides = n(),							#calculates the number of rides and average duration 
+  summarise(number_of_rides = n(),			#calculates the number of rides and average duration 
   average_duration = mean(ride_length)) %>% 		# calculates the average duration
   arrange(member_casual, weekday)								# sorts
 ```
@@ -334,16 +332,11 @@ all_trips_v2 %>%
 
 #### Create a csv file that we will visualize in Excel, Tableau, or my presentation software
 
-N.B.: This file location is for a Mac. If you are working on a PC, change the file location accordingly (most likely "C:\Users\YOUR_USERNAME\Desktop\...") to export the data. You can read more here:
-
-https://datatofish.com/export-dataframe-to-csv-in-r/
-
 ```{r Create a csv file that we will visualize in Excel, Tableau}
 counts <- aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual + 
                       all_trips_v2$day_of_week, FUN = mean)
-write.csv(counts, file = 'C:/Users/Action/Documents/RStudio/GGDA/Project/Cyclistic/avg_ride_length.csv')    
+write.csv(counts, file =  'C:/Users/Action/Documents/RStudio/repos/01__cyclistic/avg_ride_length.csv')    
 ```
 
-### You're done! Congratulations!
 
 

@@ -473,11 +473,6 @@ q4_2019 &lt;-  mutate(q4_2019, ride_id = as.character(ride_id)
             &quot;01 - Rental Details Duration In Seconds Uncapped&quot;, 
             &quot;05 - Member Details Member Birthday Year&quot;, 
             &quot;Member Gender&quot;, &quot;tripduration&quot;))</code></pre>
-<p>a# Remove “bad” data</p>
-<p>a# The dataframe includes a few hundred entries when bikes were taken out of docks and checked for quality by Divvy or ride_length was negative</p>
-<p>a# We will create a new version of the dataframe (v2) since data is being removed</p>
-<p>a# <a href="https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/" class="uri">https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/</a> all_trips_v2 &lt;- all_trips[!(all_trips<span class="math inline">\(start_station_name == &quot;HQ QR&quot; | all_trips\)</span>ride_length&lt;0),]</p>
-<p>www END wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</p>
 </div>
 </div>
 <div id="step-3-clean-up-and-add-data-to-prepare-for-analysis" class="section level3">
@@ -555,40 +550,38 @@ q4_2019 &lt;-  mutate(q4_2019, ride_id = as.character(ride_id)
 </div>
 <div id="there-are-a-few-problems-we-will-need-to-fix" class="section level4">
 <h4>There are a few problems we will need to fix:</h4>
-<div id="in-the-member_casual-column-there-are-two-names-for-members-member-and-subscriber-and-two-names-for-casual-riders-customer-and-casual.-we-will-need-to-consolidate-that-from-four-to-two-labels." class="section level5">
-<h5>(1) In the “member_casual” column, there are two names for members (“member” and “Subscriber”) and two names for casual riders (“Customer” and “casual”). We will need to consolidate that from four to two labels.</h5>
+</div>
+<div id="in-the-member_casual-column-there-are-two-names-for-members-member-and-subscriber-and-two-names-for-casual-riders-customer-and-casual.-we-will-need-to-consolidate-that-from-four-to-two-labels." class="section level4">
+<h4>(1) In the “member_casual” column, there are two names for members (“member” and “Subscriber”) and two names for casual riders (“Customer” and “casual”). We will need to consolidate that from four to two labels.</h4>
 <p>In the “member_casual” column, replace “Subscriber” with “member” and “Customer” with “casual”</p>
-<p>Before 2020, Divvy used different labels for these two types of riders … we will want to make our dataframe consistent with their current nomenclature</p>
-<p>N.B.: “Level” is a special property of a column that is retained even if a subset does not contain any values from a specific level</p>
-<div id="begin-by-seeing-how-many-observations-fall-under-each-usertype" class="section level6">
-<h6>Begin by seeing how many observations fall under each usertype</h6>
+<p>Before 2020, Divvy used different labels for these two types of riders. We will make our dataframe consistent with their current nomenclature</p>
+<div id="begin-by-seeing-how-many-observations-fall-under-each-usertype" class="section level5">
+<h5>Begin by seeing how many observations fall under each usertype</h5>
 <pre class="r"><code>table(all_trips$member_casual)</code></pre>
 <pre><code>## 
 ##     casual   Customer     member Subscriber 
 ##      48480     833822     378407    2559525</code></pre>
 </div>
-<div id="reassign-to-the-desired-values-we-will-go-with-the-current-2020-labels" class="section level6">
-<h6>Reassign to the desired values (we will go with the current 2020 labels)</h6>
+<div id="reassign-to-the-desired-values-we-will-go-with-the-current-2020-labels" class="section level5">
+<h5>Reassign to the desired values (we will go with the current 2020 labels)</h5>
 <pre class="r"><code>all_trips &lt;-  all_trips %&gt;% 
   mutate(member_casual = recode(member_casual
                            ,&quot;Subscriber&quot; = &quot;member&quot;
                            ,&quot;Customer&quot; = &quot;casual&quot;))</code></pre>
 </div>
-<div id="check-to-make-sure-the-proper-number-of-observations-were-reassigned" class="section level6">
-<h6>Check to make sure the proper number of observations were reassigned</h6>
-<p>table(all_trips$member_casual)</p>
+<div id="check-to-make-sure-the-proper-number-of-observations-were-reassigned" class="section level5">
+<h5>Check to make sure the proper number of observations were reassigned</h5>
 <pre class="r"><code>table(all_trips$member_casual)</code></pre>
 <pre><code>## 
 ##  casual  member 
 ##  882302 2937932</code></pre>
 </div>
 </div>
-<div id="the-data-can-only-be-aggregated-at-the-ride-level-which-is-too-granular.-we-will-want-to-add-some-additional-columns-of-data-such-as-day-month-year-that-provide-additional-opportunities-to-aggregate-the-data." class="section level5">
-<h5>(2) The data can only be aggregated at the ride-level, which is too granular. We will want to add some additional columns of data – such as day, month, year – that provide additional opportunities to aggregate the data.</h5>
-<div id="add-columns-that-list-the-date-year-month-day-and-day_of_week-of-each-ride" class="section level6">
-<h6>Add columns that list the date, year, month, day and day_of_week of each ride</h6>
-<p>This will allow us to aggregate ride data for each month, day, or year … before completing these operations we could only aggregate at the ride level</p>
-<p><a href="https://www.statmethods.net/input/dates.html" class="uri">https://www.statmethods.net/input/dates.html</a> more on date formats in R found at that link</p>
+<div id="the-data-can-only-be-aggregated-at-the-ride-level-which-is-too-granular.-we-will-want-to-add-some-additional-columns-of-data-such-as-day-month-year-that-provide-additional-opportunities-to-aggregate-the-data." class="section level4">
+<h4>(2) The data can only be aggregated at the ride-level, which is too granular. We will want to add some additional columns of data – such as day, month, year – that provide additional opportunities to aggregate the data.</h4>
+<div id="add-columns-that-list-the-date-year-month-day-and-day_of_week-of-each-ride" class="section level5">
+<h5>Add columns that list the date, year, month, day and day_of_week of each ride</h5>
+<p>This will allow us to aggregate ride data for each month, day, or year. Before completing these operations, we could only aggregate at the ride level</p>
 <pre class="r"><code>all_trips$date &lt;- as.Date(all_trips$started_at)
 all_trips$year &lt;- format(as.Date(all_trips$date), &quot;%Y&quot;)
 all_trips$month &lt;- format(as.Date(all_trips$date), &quot;%m&quot;)
@@ -596,15 +589,14 @@ all_trips$day &lt;- format(as.Date(all_trips$date), &quot;%d&quot;)
 all_trips$day_of_week &lt;- format(as.Date(all_trips$date), &quot;%A&quot;)</code></pre>
 </div>
 </div>
-<div id="we-will-want-to-add-a-calculated-field-for-length-of-ride-since-the-2020q1-data-did-not-have-the-tripduration-column.-we-will-add-ride_length-to-the-entire-dataframe-for-consistency." class="section level5">
-<h5>(3) We will want to add a calculated field for length of ride since the 2020Q1 data did not have the “tripduration” column. We will add “ride_length” to the entire dataframe for consistency.</h5>
-<div id="add-a-ride_length-calculation-to-all_trips-in-seconds" class="section level6">
-<h6>Add a “ride_length” calculation to all_trips (in seconds)</h6>
-<p><a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/difftime.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/base/html/difftime.html</a></p>
+<div id="we-will-add-a-calculated-field-for-length-of-ride-since-the-2020-q1-data-did-not-have-the-tripduration-column.-we-will-add-ride_length-to-the-entire-dataframe-for-consistency." class="section level4">
+<h4>(3) We will add a calculated field for length of ride since the 2020 Q1 data did not have the “tripduration” column. We will add “ride_length” to the entire dataframe for consistency.</h4>
+<div id="add-a-ride_length-calculation-to-all_trips-in-seconds" class="section level5">
+<h5>Add a “ride_length” calculation to all_trips (in seconds)</h5>
 <pre class="r"><code>all_trips$ride_length &lt;- difftime(all_trips$ended_at,all_trips$started_at)</code></pre>
 </div>
-<div id="inspect-the-structure-of-the-columns" class="section level6">
-<h6>Inspect the structure of the columns</h6>
+<div id="inspect-the-structure-of-the-columns" class="section level5">
+<h5>Inspect the structure of the columns</h5>
 <pre class="r"><code>str(all_trips)</code></pre>
 <pre><code>## tibble [3,820,234 x 15] (S3: tbl_df/tbl/data.frame)
 ##  $ ride_id           : chr [1:3820234] &quot;22178529&quot; &quot;22178530&quot; &quot;22178531&quot; &quot;22178532&quot; ...
@@ -624,8 +616,8 @@ all_trips$day_of_week &lt;- format(as.Date(all_trips$date), &quot;%A&quot;)</cod
 ##  $ ride_length       : &#39;difftime&#39; num [1:3820234] 420 1020 240 300 ...
 ##   ..- attr(*, &quot;units&quot;)= chr &quot;secs&quot;</code></pre>
 </div>
-<div id="convert-ride_length-from-factor-to-numeric-so-we-can-run-calculations-on-the-data" class="section level6">
-<h6>Convert “ride_length” from Factor to numeric so we can run calculations on the data</h6>
+<div id="convert-ride_length-from-factor-to-numeric-so-we-can-run-calculations-on-the-data" class="section level5">
+<h5>Convert “ride_length” from Factor to numeric so we can run calculations on the data</h5>
 <pre class="r"><code>is.factor(all_trips$ride_length)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <pre class="r"><code>all_trips$ride_length &lt;- as.numeric(as.character(all_trips$ride_length))
@@ -633,18 +625,16 @@ is.numeric(all_trips$ride_length)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 </div>
 </div>
-<div id="there-are-some-rides-where-tripduration-shows-up-as-negative-including-several-hundred-rides-where-divvy-took-bikes-out-of-circulation-for-quality-control-reasons.-we-will-want-to-delete-these-rides." class="section level5">
-<h5>(4) There are some rides where tripduration shows up as negative, including several hundred rides where Divvy took bikes out of circulation for Quality Control reasons. We will want to delete these rides.</h5>
-<div id="remove-bad-data" class="section level6">
-<h6>Remove “bad” data</h6>
+<div id="there-are-some-rides-where-tripduration-shows-up-as-negative-including-several-hundred-rides-where-divvy-took-bikes-out-of-circulation-for-quality-control-reasons.-we-will-want-to-delete-these-rides." class="section level4">
+<h4>(4) There are some rides where tripduration shows up as negative, including several hundred rides where Divvy took bikes out of circulation for Quality Control reasons. We will want to delete these rides.</h4>
+<div id="remove-bad-data" class="section level5">
+<h5>Remove “bad” data</h5>
 <p>The dataframe includes a few hundred entries when bikes were taken out of docks and checked for quality by Divvy or ride_length was negative</p>
-<p><a href="https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/" class="uri">https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/</a></p>
 </div>
-<div id="we-will-create-a-new-version-of-the-dataframe-v2-since-data-is-being-removed" class="section level6">
-<h6>We will create a new version of the dataframe (v2) since data is being removed</h6>
+<div id="we-will-create-a-new-version-of-the-dataframe-v2-since-data-is-being-removed" class="section level5">
+<h5>We will create a new version of the dataframe (v2) since data is being removed</h5>
 <pre class="r"><code>all_trips_v2 &lt;- all_trips[!(all_trips$start_station_name == &quot;HQ QR&quot; | 
                               all_trips$ride_length &lt; 0),]</code></pre>
-</div>
 </div>
 </div>
 </div>
@@ -661,8 +651,8 @@ is.numeric(all_trips$ride_length)</code></pre>
 <pre class="r"><code>min(all_trips_v2$ride_length) #shortest ride</code></pre>
 <pre><code>## [1] 1</code></pre>
 </div>
-<div id="you-can-condense-the-four-lines-above-to-one-line-using-summary-on-the-specific-attribute" class="section level4">
-<h4>You can condense the four lines above to one line using summary() on the specific attribute</h4>
+<div id="condense-the-four-lines-above-to-one-line-using-summary-on-the-specific-attribute" class="section level4">
+<h4>Condense the four lines above to one line using summary() on the specific attribute</h4>
 <pre class="r"><code>summary(all_trips_v2$ride_length)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##       1     418     716    1477    1279 9387024</code></pre>
@@ -739,7 +729,7 @@ is.numeric(all_trips$ride_length)</code></pre>
 <pre class="r"><code>all_trips_v2 %&gt;% 
   mutate(weekday = wday(started_at, label = TRUE)) %&gt;%  #creates weekday field using wday()
   group_by(member_casual, weekday) %&gt;%  #groups by usertype and weekday
-  summarise(number_of_rides = n(),                          #calculates the number of rides and average duration 
+  summarise(number_of_rides = n(),          #calculates the number of rides and average duration 
   average_duration = mean(ride_length)) %&gt;%         # calculates the average duration
   arrange(member_casual, weekday)                               # sorts</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;member_casual&#39;. You can override using the `.groups` argument.</code></pre>
@@ -795,15 +785,10 @@ is.numeric(all_trips$ride_length)</code></pre>
 <h3>STEP 5: EXPORT SUMMARY FILE FOR FURTHER ANALYSIS</h3>
 <div id="create-a-csv-file-that-we-will-visualize-in-excel-tableau-or-my-presentation-software" class="section level4">
 <h4>Create a csv file that we will visualize in Excel, Tableau, or my presentation software</h4>
-<p>N.B.: This file location is for a Mac. If you are working on a PC, change the file location accordingly (most likely “C:_USERNAME...”) to export the data. You can read more here:</p>
-<p><a href="https://datatofish.com/export-dataframe-to-csv-in-r/" class="uri">https://datatofish.com/export-dataframe-to-csv-in-r/</a></p>
 <pre class="r"><code>counts &lt;- aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual + 
                       all_trips_v2$day_of_week, FUN = mean)
-write.csv(counts, file = &#39;C:/Users/Action/Documents/RStudio/GGDA/Project/Cyclistic/avg_ride_length.csv&#39;)    </code></pre>
+write.csv(counts, file =  &#39;C:/Users/Action/Documents/RStudio/repos/01__cyclistic/avg_ride_length.csv&#39;)    </code></pre>
 </div>
-</div>
-<div id="youre-done-congratulations" class="section level3">
-<h3>You’re done! Congratulations!</h3>
 </div>
 
 
