@@ -147,34 +147,6 @@ all_trips <- all_trips %>%
             "Member Gender", "tripduration"))
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-a# Remove "bad" data
-
-a# The dataframe includes a few hundred entries when bikes were taken out of docks and checked for quality by Divvy or ride_length was negative
-
-a# We will create a new version of the dataframe (v2) since data is being removed
-
-a# https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/
-all_trips_v2 <- all_trips[!(all_trips$start_station_name == "HQ QR" | all_trips$ride_length<0),]
-
-
-www END wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-
-
-
-
 ### STEP 3: CLEAN UP AND ADD DATA TO PREPARE FOR ANALYSIS
 
 #### Inspect the new table that has been created
@@ -191,21 +163,21 @@ summary(all_trips)
 
 #### There are a few problems we will need to fix:
 
-##### (1) In the "member_casual" column, there are two names for members ("member" and "Subscriber") and two names for casual riders ("Customer" and "casual"). We will need to consolidate that from four to two labels.
+#### (1) In the "member_casual" column, there are two names for members ("member" and "Subscriber") and two names for casual riders ("Customer" and "casual"). We will need to consolidate that from four to two labels.
 
 In the "member_casual" column, replace "Subscriber" with "member" and "Customer" with "casual"
 
-Before 2020, Divvy used different labels for these two types of riders ... we will want to make our dataframe consistent with their current nomenclature
+Before 2020, Divvy used different labels for these two types of riders. We will make our dataframe consistent with their current nomenclature
 
 N.B.: "Level" is a special property of a column that is retained even if a subset does not contain any values from a specific level
 
-###### Begin by seeing how many observations fall under each usertype
+##### Begin by seeing how many observations fall under each usertype
 
 ```{r seeing how many observations fall under each usertype}
 table(all_trips$member_casual)
 ```
 
-###### Reassign to the desired values (we will go with the current 2020 labels)
+##### Reassign to the desired values (we will go with the current 2020 labels)
 
 ```{r replace "Subscriber" with "member" and "Customer" with "casual"}
 all_trips <-  all_trips %>% 
@@ -214,20 +186,17 @@ all_trips <-  all_trips %>%
                            ,"Customer" = "casual"))
 ```
 
-###### Check to make sure the proper number of observations were reassigned
-table(all_trips$member_casual)
+##### Check to make sure the proper number of observations were reassigned
 
 ```{r Check to make sure the proper number of observations were reassigned}
 table(all_trips$member_casual)
 ```
 
-##### (2) The data can only be aggregated at the ride-level, which is too granular. We will want to add some additional columns of data -- such as day, month, year -- that provide additional opportunities to aggregate the data.
+#### (2) The data can only be aggregated at the ride-level, which is too granular. We will want to add some additional columns of data -- such as day, month, year -- that provide additional opportunities to aggregate the data.
 
-###### Add columns that list the date, year, month, day and day_of_week of each ride
+##### Add columns that list the date, year, month, day and day_of_week of each ride
 
 This will allow us to aggregate ride data for each month, day, or year ... before completing these operations we could only aggregate at the ride level
-
-https://www.statmethods.net/input/dates.html more on date formats in R found at that link
 
 ```{r add columns that list the date, year, month, day and day_of_week of each ride}
 all_trips$date <- as.Date(all_trips$started_at)
@@ -238,24 +207,21 @@ all_trips$day_of_week <- format(as.Date(all_trips$date), "%A")
 ```
 
 
+#### (3) We will add a calculated field for length of ride since the 2020 Q1 data did not have the "tripduration" column. We will add "ride_length" to the entire dataframe for consistency.
 
-##### (3) We will want to add a calculated field for length of ride since the 2020Q1 data did not have the "tripduration" column. We will add "ride_length" to the entire dataframe for consistency.
-
-###### Add a "ride_length" calculation to all_trips (in seconds)
-
-https://stat.ethz.ch/R-manual/R-devel/library/base/html/difftime.html
+##### Add a "ride_length" calculation to all_trips (in seconds)
 
 ```{r add a "ride_length" calculation to all_trips (in seconds)}
 all_trips$ride_length <- difftime(all_trips$ended_at,all_trips$started_at)
 ```
 
-###### Inspect the structure of the columns
+##### Inspect the structure of the columns
 
 ```{r inspedt the structure of the columns}
 str(all_trips)
 ```
 
-###### Convert "ride_length" from Factor to numeric so we can run calculations on the data
+##### Convert "ride_length" from Factor to numeric so we can run calculations on the data
 
 ```{r Convert "ride_length" from Factor to numeric so we can run calculations on the data}
 is.factor(all_trips$ride_length)
@@ -263,15 +229,13 @@ all_trips$ride_length <- as.numeric(as.character(all_trips$ride_length))
 is.numeric(all_trips$ride_length)
 ```
 
-##### (4) There are some rides where tripduration shows up as negative, including several hundred rides where Divvy took bikes out of circulation for Quality Control reasons. We will want to delete these rides.
+#### (4) There are some rides where tripduration shows up as negative, including several hundred rides where Divvy took bikes out of circulation for Quality Control reasons. We will want to delete these rides.
 
-###### Remove "bad" data
+##### Remove "bad" data
 
 The dataframe includes a few hundred entries when bikes were taken out of docks and checked for quality by Divvy or ride_length was negative
 
-https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/
-
-###### We will create a new version of the dataframe (v2) since data is being removed
+##### We will create a new version of the dataframe (v2) since data is being removed
 
 ```{r create a new version of the dataframe (v2) and remove entries when bikes were taken out of docks and checked for quality by Divvy or ride_length was negative}
 all_trips_v2 <- all_trips[!(all_trips$start_station_name == "HQ QR" | 
