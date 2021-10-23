@@ -302,7 +302,7 @@ all_trips_v2 %>%
 
 #### Let's visualize the number of rides by rider type
   
-```{r visualize the number of rides by rider type}
+```{r visualize the number of rides by rider type and by weekday}
 all_trips_v2 %>% 
   mutate(weekday = wday(started_at, label = TRUE)) %>% 
   group_by(member_casual, weekday) %>% 
@@ -316,7 +316,7 @@ all_trips_v2 %>%
 
 #### Let's create a visualization for average duration
 
-```{r create a visualization for average duration}
+```{r create a visualization for average duration by rider type and by weekday}
 all_trips_v2 %>% 
   mutate(weekday = wday(started_at, label = TRUE)) %>% 
   group_by(member_casual, weekday) %>% 
@@ -327,6 +327,34 @@ all_trips_v2 %>%
              fill = member_casual)) +
   geom_col(position = "dodge")
 ```
+
+
+```{r visualize the number of rides by rider type and by month}
+all_trips_v2 %>% 
+  group_by(member_casual, month) %>%  #groups by usertype and weekday
+  summarise(number_of_rides = n(),			#calculates the number of rides and average duration 
+  average_duration = mean(ride_length)) %>% 		# calculates the average duration
+  arrange(member_casual, month)	%>% 						# sorts
+  ggplot(aes(x = month, y = number_of_rides, 
+             fill = member_casual)) +
+  geom_col(position = "dodge")
+```
+
+
+
+```{r visualize the average duration by rider type and by month}
+all_trips_v2 %>% 
+  group_by(member_casual, month) %>%  #groups by usertype and weekday
+  summarise(number_of_rides = n(),			#calculates the number of rides and average duration 
+  average_duration = mean(ride_length)) %>% 		# calculates the average duration
+  arrange(member_casual, month)	%>% 						# sorts
+  ggplot(aes(x = month, y = average_duration, 
+             fill = member_casual)) +
+  geom_col(position = "dodge")
+```
+
+
+
 
 ### STEP 5: EXPORT SUMMARY FILE FOR FURTHER ANALYSIS
 
